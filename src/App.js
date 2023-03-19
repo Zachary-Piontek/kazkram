@@ -38,6 +38,39 @@ function App() {
     }
   };
 
+  const handleSportsClick = () => {
+    const sportsUrl = `https://newsapi.org/v2/everything?q=sports&apiKey=${newsApi}`;
+    fetch(sportsUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles);
+        localStorage.setItem('news', JSON.stringify(data.articles));
+        setShowSearchResults(true);
+      });
+  };
+
+  const handleBusinessClick = () => {
+    const businessUrl = `https://newsapi.org/v2/everything?q=business&apiKey=${newsApi}`;
+    fetch(businessUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles);
+        localStorage.setItem('news', JSON.stringify(data.articles));
+        setShowSearchResults(true);
+      });
+  };
+
+  const handleTechnologyClick = () => {
+    const technologyUrl = `https://newsapi.org/v2/everything?q=technology&apiKey=${newsApi}`;
+    fetch(technologyUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles);
+        localStorage.setItem('news', JSON.stringify(data.articles));
+        setShowSearchResults(true);
+      });
+  };
+
   const handleGoBack = () => {
     setShowSearchResults(false);
     setSearchTerm('');
@@ -66,10 +99,14 @@ function App() {
           />
           <button type="submit">Search</button>
         </form>
-      </div>
+        <div className='topics'>
+          <button onClick={handleGoBack}>Go back to homepage</button>
+          <button onClick={handleSportsClick}>Sports</button>
+          <button onClick={handleBusinessClick}>Business</button>
+          <button onClick={handleTechnologyClick}>Technology</button>
+          </div>
       {showSearchResults ? (
         <div className='news'>
-          <button onClick={handleGoBack}>Go back to homepage</button>
           {news.map((article, index) => (
             <div key={index} className="news-articles">
               <h2>{article.title}</h2>
@@ -95,6 +132,7 @@ function App() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }
