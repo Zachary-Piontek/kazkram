@@ -12,6 +12,7 @@ function App() {
 
   useEffect(() => {
     const cachedNews = localStorage.getItem('news');
+    console.log(news);
     if (cachedNews) {
       setNews(JSON.parse(cachedNews));
     } else {
@@ -43,7 +44,7 @@ function App() {
     fetch(sportsUrl)
       .then((response) => response.json())
       .then((data) => {
-        setNews(data.articles);
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
         localStorage.setItem('news', JSON.stringify(data.articles));
         setShowSearchResults(true);
       });
@@ -54,7 +55,7 @@ function App() {
     fetch(businessUrl)
       .then((response) => response.json())
       .then((data) => {
-        setNews(data.articles);
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
         localStorage.setItem('news', JSON.stringify(data.articles));
         setShowSearchResults(true);
       });
@@ -65,7 +66,7 @@ function App() {
     fetch(technologyUrl)
       .then((response) => response.json())
       .then((data) => {
-        setNews(data.articles);
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
         localStorage.setItem('news', JSON.stringify(data.articles));
         setShowSearchResults(true);
       });
@@ -74,13 +75,14 @@ function App() {
   const handleGoBack = () => {
     setShowSearchResults(false);
     setSearchTerm('');
-    fetch(newsApiUrl)
+    fetch(`${newsApiUrl}`)
       .then((response) => response.json())
       .then((data) => {
         setNews(data.articles);
         localStorage.setItem('news', JSON.stringify(data.articles));
       });
   };
+
 
   if (!news.length) {
     return <p>Loading...</p>;
@@ -114,6 +116,7 @@ function App() {
                 src={article.urlToImage || randomImage}
                 alt={article.title}
               />
+              <h3>{new Date(article.publishedAt).toDateString()}</h3>
               <a href={article.url}>Read more</a>
             </div>
           ))}
@@ -127,6 +130,7 @@ function App() {
                 src={article.urlToImage || randomImage}
                 alt={article.title}
               />
+              <h3>{new Date(article.publishedAt).toDateString()}</h3>
               <a href={article.url}>Read more</a>
             </div>
           ))}
