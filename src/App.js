@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import newsImage from '../src/img/old-newspaper.jpg';
 
 const newsApi = process.env.REACT_APP_NEWS_API_KEY;
 const newsApiUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsApi}`;
@@ -57,8 +56,7 @@ function App() {
   return (
     <div className="App">
       <div className='header'>
-        <h1>US News</h1>
-        <img className='header-image' src={newsImage} alt="news" />
+        <h1>Kazkram News</h1>
         <form onSubmit={handleSearch}>
           <input
             type="text"
