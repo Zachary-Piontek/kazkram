@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import LazyLoad from 'react-lazy-load';
 
 const newsApi = process.env.REACT_APP_NEWS_API_KEY;
 const newsApiUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsApi}`;
-const randomImage = `https://source.unsplash.com/1600x900/?news`;
+const randomImage = `https://source.unsplash.com/400x300/?news`;
 
 function App() {
   const [news, setNews] = useState([]);
@@ -11,18 +12,11 @@ function App() {
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
-    const cachedNews = localStorage.getItem('news');
-    console.log(news);
-    if (cachedNews) {
-      setNews(JSON.parse(cachedNews));
-    } else {
-      fetch(newsApiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          setNews(data.articles);
-          localStorage.setItem('news', JSON.stringify(data.articles));
-        });
-    }
+    fetch(newsApiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles);
+      });
   }, []);
 
   const handleSearch = (e) => {
@@ -32,9 +26,9 @@ function App() {
       fetch(searchUrl)
         .then((response) => response.json())
         .then((data) => {
-          setNews(data.articles);
-          localStorage.setItem('news', JSON.stringify(data.articles));
+          setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
           setShowSearchResults(true);
+          setSearchTerm(''); // Reset the search term
         });
     }
   };
@@ -45,7 +39,6 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
-        localStorage.setItem('news', JSON.stringify(data.articles));
         setShowSearchResults(true);
       });
   };
@@ -56,7 +49,6 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
-        localStorage.setItem('news', JSON.stringify(data.articles));
         setShowSearchResults(true);
       });
   };
@@ -67,7 +59,46 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
-        localStorage.setItem('news', JSON.stringify(data.articles));
+        setShowSearchResults(true);
+      });
+  };
+
+  const handleEntertainmentClick = () => {
+    const entertainmentUrl = `https://newsapi.org/v2/everything?q=entertainment&apiKey=${newsApi}`;
+    fetch(entertainmentUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
+        setShowSearchResults(true);
+      });
+  };
+
+  const handleScienceClick = () => {
+    const scienceUrl = `https://newsapi.org/v2/everything?q=science&apiKey=${newsApi}`;
+    fetch(scienceUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
+        setShowSearchResults(true);
+      });
+  };
+
+  const handleHealthClick = () => {
+    const healthUrl = `https://newsapi.org/v2/everything?q=health&apiKey=${newsApi}`;
+    fetch(healthUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
+        setShowSearchResults(true);
+      });
+  };
+
+  const handleMoneyClick = () => {
+    const moneyUrl = `https://newsapi.org/v2/everything?q=money&apiKey=${newsApi}`;
+    fetch(moneyUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setNews(data.articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)));
         setShowSearchResults(true);
       });
   };
@@ -79,10 +110,8 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setNews(data.articles);
-        localStorage.setItem('news', JSON.stringify(data.articles));
       });
   };
-
 
   if (!news.length) {
     return <p>Loading...</p>;
@@ -92,50 +121,55 @@ function App() {
     <div className="App">
       <div className='header'>
         <h1>Kazkram News</h1>
-        <form onSubmit={handleSearch}>
+        <form onSubmit={handleSearch} className='search-form'>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search all news"
-          />
+            placeholder="Search all news" />
           <button type="submit">Search</button>
         </form>
         <div className='topics'>
-          <button onClick={handleGoBack}>Go back to homepage</button>
+        {showSearchResults && <button onClick={handleGoBack}>Go back to homepage</button>}
           <button onClick={handleSportsClick}>Sports</button>
           <button onClick={handleBusinessClick}>Business</button>
           <button onClick={handleTechnologyClick}>Technology</button>
+          <button onClick={handleEntertainmentClick}>Entertainment</button>
+          <button onClick={handleScienceClick}>Science</button>
+          <button onClick={handleHealthClick}>Health</button>
+          <button onClick={handleMoneyClick}>Money</button>
+        </div>
+        {showSearchResults ? (
+          <div className='news'>
+            {news.map((article, index) => (
+              <div key={index} className="news-articles">
+                <h2>{article.title}</h2>
+                <LazyLoad offset={300}>
+                <img
+                  src={article.urlToImage || randomImage}
+                  alt={article.title} />
+                </LazyLoad>
+                <h3>{new Date(article.publishedAt).toDateString()}</h3>
+                <a href={article.url}>Read more</a>
+              </div>
+            ))}
           </div>
-      {showSearchResults ? (
-        <div className='news'>
-          {news.map((article, index) => (
-            <div key={index} className="news-articles">
-              <h2>{article.title}</h2>
-              <img
-                src={article.urlToImage || randomImage}
-                alt={article.title}
-              />
-              <h3>{new Date(article.publishedAt).toDateString()}</h3>
-              <a href={article.url}>Read more</a>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className='news'>
-          {news.map((article, index) => (
-            <div key={index} className="news-articles">
-              <h2>{article.title}</h2>
-              <img
-                src={article.urlToImage || randomImage}
-                alt={article.title}
-              />
-              <h3>{new Date(article.publishedAt).toDateString()}</h3>
-              <a href={article.url}>Read more</a>
-            </div>
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className='news'>
+            {news.map((article, index) => (
+              <div key={index} className="news-articles">
+                <h2>{article.title}</h2>
+                <LazyLoad offset={300}>
+                <img
+                  src={article.urlToImage || randomImage}
+                  alt={article.title} />
+                </LazyLoad>
+                <h3>{new Date(article.publishedAt).toDateString()}</h3>
+                <a href={article.url}>Read more</a>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
