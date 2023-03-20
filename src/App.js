@@ -113,10 +113,6 @@ function App() {
       });
   };
 
-  if (!news.length) {
-    return <p>Loading...</p>;
-  }
-
   return (
     <div className="App">
       <div className='header'>
