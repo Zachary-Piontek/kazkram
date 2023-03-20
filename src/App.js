@@ -120,7 +120,7 @@ function App() {
   return (
     <div className="App">
       <div className='header'>
-        <h1>Kazkram News</h1>
+        <h1>🌐 Kazkram News 📰</h1>
         <form onSubmit={handleSearch} className='search-form'>
           <input
             type="text"
